@@ -1,4 +1,5 @@
-FROM node:16.17.0-alpine as builder
+# FIX: Upgraded from node:16.17.0-alpine to node:20-alpine
+FROM node:20-alpine as builder
 WORKDIR /app
 COPY ./package.json .
 COPY ./yarn.lock .
