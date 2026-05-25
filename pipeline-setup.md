@@ -2,7 +2,7 @@
 
 ## Step1: Launch EC2 instance
  - AMI: Ubuntu
- - Instance_Type: t2.medium
+ - Instance_Type: m7i-flex.large
  - Volume: 30 GB
 
 ## Step2: Connect To Instance
