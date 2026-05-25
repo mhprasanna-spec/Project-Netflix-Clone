@@ -109,18 +109,19 @@ pipeline {
     agent any
     tools {
         jdk 'jdk17'
-        nodejs 'node16'
+        // FIX 1: Updated from 'node16' to 'node18' to fix the npm EBADENGINE warning
+        nodejs 'node18' 
     }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
     }
     stages {
-
         stage('Code-Pull') {
             steps {
-                git branch: 'main', url: 'https://github.com/abhipraydhoble/netflix.git'
+                git branch: 'main', url: 'https://github.com/mhprasanna-spec/Project-Netflix-Clone.git'
             }
         }
+        
         stage("Sonarqube Analysis") {
             steps {
                 withSonarQubeEnv('sonar-server') {
@@ -129,6 +130,7 @@ pipeline {
                 }
             }
         }
+        
         stage("quality gate") {
             steps {
                 script {
@@ -136,39 +138,51 @@ pipeline {
                 }
             }
         }
+        
         stage('Install Dependencies') {
             steps {
                 sh "npm install"
             }
         }
-       stage('TRIVY FS SCAN') {
+        
+        stage('TRIVY FS SCAN') {
             steps {
-                sh "trivy fs . > trivyfs.txt"
+                // FIX 2: Runs Trivy via Docker container so you do not have to install Trivy on the host machine
+                sh "docker run --rm -v \$(pwd):/apps aquasec/trivy fs /apps > trivyfs.txt"
             }
         }
+        
         stage("Docker Build & Push"){
             steps{
                 script{
                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker'){   
-                       sh "docker build --build-arg TMDB_V3_API_KEY=020581a34f3ab93b1360a55bea864bd9 -t abhipraydh96/moviesite ."
-                       sh "docker push abhipraydh96/moviesite "
+                       sh "docker build --build-arg TMDB_V3_API_KEY=020581a34f3ab93b1360a55bea864bd9 -t prasanna369/moviesite ."
+                       sh "docker push prasanna369/moviesite"
                     }
                 }
             }
         }
-        stage("TRIVY"){
+        
+        stage("TRIVY IMAGE SCAN"){
             steps{
-                sh "trivy image abhipraydh96/moviesite > trivyimage.txt" 
-            }
-        }
-        stage('Deploy to container'){
-            steps{
-                sh 'docker run -d --name netflix -p 8081:80 abhipraydh96/moviesite'
+                // FIX 3: Runs the image scan using Docker container to bypass local installation issues
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image prasanna369/moviesite > trivyimage.txt" 
             }
         }
         
+        stage('Deploy to container'){
+            steps{
+                // FIX 4: Added stopping and removing of old container so the pipeline doesn't fail due to name/port conflicts
+                sh '''
+                    docker stop netflix || true
+                    docker rm netflix || true
+                    docker run -d --name netflix -p 8081:80 prasanna369/moviesite
+                '''
+            }
+        }
     }
 }
+
 ````
 Note: 
 - ensure jenkins user has permission to create container
