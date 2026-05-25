@@ -80,7 +80,7 @@ stage view
 ## Step7: Install  Tools: Manage Jenkins->Tools
    - add jdk: "jdk17" ->install from adoptium.net->version- 17
    - add SonarQube Scanner: "sonar-scanner"
-   - add NodeJs: "node16" -> version 16
+   - add NodeJs: "node18" -> version 18
    - docker: "docker"
 
 ### **Configure Java and Nodejs in Global Tool Configuration**
@@ -91,6 +91,8 @@ Goto Manage Jenkins → Tools → Install JDK(17) and NodeJs(16)→ Click on App
 ![image](https://github.com/user-attachments/assets/24589963-9a7e-4d6a-9598-66580c195e30)
 
 #### Node-js
+<img width="1920" height="843" alt="image" src="https://github.com/user-attachments/assets/d500eb49-52d8-455c-8cc9-6d91c473121e" />
+
 ![image](https://github.com/user-attachments/assets/51617874-be4d-438c-a93e-5a5d9e5781fa)
 #### Docker
 ![image](https://github.com/user-attachments/assets/289c2e2a-df33-476b-a195-d584db3ef03e)
